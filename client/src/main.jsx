@@ -1,10 +1,22 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from 'react';
+import { createRoot} from 'react-dom/client';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import App from './App.jsx'
 import './index.css'
+import Lobby from './pages/Lobby.jsx';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const router = (
+  <Routes>
+    <Route path='/' element={<App/>}>
+      <Route index element={<Lobby/>} />
+
+
+    </Route>
+  </Routes>
+);
+
+createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <Router>{router}</Router>
   </React.StrictMode>,
 )

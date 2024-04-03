@@ -1,5 +1,5 @@
 const express = require("express");
-const {Server} = require("socket.io");
+const chatServer = require("./chat/chatServer");
 
 const PORT = process.env.PORT || 3001;
 
@@ -12,8 +12,15 @@ if(process.env.NODE_ENV === 'production'){
   app.get('*', (req,res) =>{
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
+}else
+{
+  app.get('*', (req, res) =>{
+    res.send("You are on the server");
+  });
 }
 
-app.listen(PORT, () =>{
+const expressServer = app.listen(PORT, () =>{
   console.log(`Server running on port ${PORT}`);
 });
+
+chatServer(expressServer)
