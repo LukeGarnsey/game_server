@@ -1,15 +1,12 @@
 
-// import { Outlet } from 'react-router-dom';
-import ChatManager from './components/ChatManager';
+import { Outlet } from 'react-router-dom';
 
 function App() {
 
-  
   return (
     <>
       <div className='App'>
-        {/* <Outlet/> */}
-        <ChatManager />
+        <Outlet/>
       </div>
     </>
   )

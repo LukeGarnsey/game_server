@@ -1,23 +1,25 @@
 import { useRef } from "react";
-import { socket } from "../socket";
+import { socket } from "../../socket";
 import PropTypes from 'prop-types';
-export default function Lobby({roomList, userList}){
+export default function Lobby({roomList, userList, username}){
   const roomNameRef = useRef(null);
-  const nameRef = useRef(null);
+  
   const enterRoom = (e) =>{
     e.preventDefault();
-    if(nameRef.current.value && roomNameRef.current.value){
+    if(roomNameRef.current.value){
       socket.emit('enterRoom', {
-        name: nameRef.current.value,
-        room: roomNameRef.current.value
+        room: roomNameRef.current.value,
+        name: username
       });
     }
   }
   return (
     <>
-      <h1>Lobby</h1>
+      <div style={styles.container}>
+        <h1 style={styles.h1}>Lobby</h1><h3  style={styles.h1}>{username}</h3>
+      </div>
       <form style={styles.form} className="form-join" onSubmit={enterRoom}>
-        <input ref={nameRef} style={styles.formInput} type="text" id="name" maxLength="8" placeholder="Your name" size="5" required />
+        
         <input ref={roomNameRef} style={styles.formInput} type="text" id="room" placeholder="Chat room" size="5" required />
         <button id="form-join" type="submit">Join</button>
       </form>
@@ -31,6 +33,13 @@ export default function Lobby({roomList, userList}){
 }
 
 const styles = {
+  container:{
+    display: 'flex',
+    justifyContent: 'space-between'
+  },
+  h1:{
+    alignSelf:'baseline'
+  },
   form : {
     width: '100%',
     margin: 'auto',
@@ -48,5 +57,6 @@ const styles = {
 
 Lobby.propTypes = {
   roomList: PropTypes.array,
-  userList: PropTypes.array
+  userList: PropTypes.array,
+  username: PropTypes.string.isRequired
 }
