@@ -27,12 +27,9 @@ module.exports = (expressServer)=>{
       if(currentRoom){
         socket.leave(currentRoom);
         io.to(currentRoom).emit('message', buildMsg(ADMIN, `${user.name} has left the room`));
-        clearUser(socket.id);
-        const usersInRoom = getUsersInRoom(currentRoom);
-        usersInRoom.forEach(user=>console.log(user));
-        console.log("current: " + currentRoom);
-        io.to(currentRoom).emit('userlist', {
-          users:usersInRoom
+        clearUser(socket.id, io, currentRoom);
+        io.emit('roomsList', {
+          rooms: getAllActiveRooms()
         });
       }
     });
@@ -42,11 +39,7 @@ module.exports = (expressServer)=>{
       if(currentRoom){
         socket.leave(currentRoom);
         io.to(currentRoom).emit('message', buildMsg(ADMIN, `${name} has left the room`));
-        clearUser(socket.id);
-        console.log("current: " + currentRoom);
-        io.to(currentRoom).emit('userlist', {
-          users:getUsersInRoom(currentRoom)
-        });
+        clearUser(socket.id, io, currentRoom);
       }
 
       const user = activateUser(socket.id, name, room);
@@ -59,7 +52,7 @@ module.exports = (expressServer)=>{
       socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined the room`));
   
       //update user list form room
-      io.to(user.room).emit('userList', {
+      io.to(user.room).emit('userListInRoom', {
         users: getUsersInRoom(user.room)
       });    
       io.emit('roomsList', {
@@ -73,7 +66,7 @@ module.exports = (expressServer)=>{
   
       if(user){
         io.to(user.room).emit('message', buildMsg(ADMIN,`${user.name} has left the room`));
-        io.to(user.room).emit('userList',{
+        io.to(user.room).emit('userListInRoom',{
           users:getUsersInRoom(user.room)
         });
         io.emit('roomList', {
@@ -116,12 +109,15 @@ module.exports = (expressServer)=>{
     ])
     return user;
   }
-  function clearUser(id){
-    const user = {id, name:undefined, room:undefined};
+  function clearUser(id, io, currentRoom){
+    const user = {id};
     UsersState.setUsers([
       ...UsersState.users.filter(item=>item.id !== id),
       user
-    ])
+    ]);
+    io.to(currentRoom).emit('userListInRoom', {
+      users:getUsersInRoom(currentRoom)
+    });
     return user;
   }
   
@@ -138,7 +134,8 @@ module.exports = (expressServer)=>{
     return UsersState.users.filter(user => user.room === room);
   }
   function getAllActiveRooms(){
-    return Array.from(new Set(UsersState.users.map(user => user.room)));
+    return Array.from(new Set(UsersState.users.map(user => user.room)))
+          .filter(room => room !== undefined);
   }
   function LeaveRoom(user, socket, io){
     

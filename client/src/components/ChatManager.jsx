@@ -14,7 +14,14 @@ export default function ChatManager(){
   const [myRoom, setMyRoom] = useState({
     inRoom:false,
     roomName:'',
-    users:[]
+    users:[],
+    leaveRoom : () =>{
+      socket.emit('leaveRoom');
+      setMyRoom(prevState =>({
+        ...prevState,
+        inRoom: false
+      }));
+    }
   });
   
   useEffect(()=>{
@@ -30,42 +37,44 @@ export default function ChatManager(){
     function message(data){
       console.log(data);
     }
-    function showUsers({users}){
-      console.log(users);
+    function allUsers({users}){
+      setUserList(users);
+    }
+    function userListInRoom({users}){
       setMyRoom(prevState =>({
         ...prevState,
         users:users
       }));
     }
-    function showRooms({rooms}){
+    function roomsList({rooms}){
       setRoomList(rooms);
     }
     function joinedRoom({success, roomName}){
-      console.log("joined: " + success + " " + roomName);
       setMyRoom(prevState =>({
         ...prevState,
         inRoom:success,
         roomName: roomName,
       }));
-      console.log(myRoom);
     }
     
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('joinedRoom', joinedRoom);
     socket.on('foo', onFooEvent);
-    socket.on('userList', showUsers);
-    socket.on('roomsList', showRooms);
+    socket.on('userListInRoom', userListInRoom);
+    socket.on('roomsList', roomsList);
     socket.on('message', message);
+    socket.on('allUsers', allUsers);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('joinedRoom', joinedRoom);
       socket.off('foo', onFooEvent);
-      socket.off('userList', showUsers);
-      socket.off('roomsList', showRooms);
-      socket.off('message', message)
+      socket.off('userListInRoom', userListInRoom);
+      socket.off('roomsList', roomsList);
+      socket.off('message', message);
+      socket.off('allUsers', allUsers);
     };
   }, []);
   return (
