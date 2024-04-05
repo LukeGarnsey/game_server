@@ -41,23 +41,23 @@ module.exports = (expressServer)=>{
         });
       }
     });
-    socket.on('enterRoom', ({name, room}) =>{
+    socket.on('enterRoom', ({room}) =>{
       
       const currentRoom = getUser(socket.id)?.room;
       if(currentRoom){
         socket.leave(currentRoom);
-        io.to(currentRoom).emit('message', buildMsg(ADMIN, `${name} has left the room`));
+        // io.to(currentRoom).emit('message', buildMsg(ADMIN, `${name} has left the room`));
         removeUserFromRoom(socket.id, io, currentRoom);
       }
 
-      const user = activateUser(socket.id, name, room);
+      const user = activateUser(socket.id, room);
   
       socket.join(user.room);
       
       socket.emit('joinedRoom', {success:true, roomName: room});
       socket.emit('message', buildMsg(ADMIN, `You have joined the ${user.room} chat room.`));
       //to everyone else
-      socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined the room`));
+      // socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined the room`));
   
       //update user list form room
       io.to(user.room).emit('userListInRoom', {
@@ -71,15 +71,15 @@ module.exports = (expressServer)=>{
     socket.on('disconnect', ()=>{
       const user = getUser(socket.id);
       removeDisconnectedUser(socket.id);
-      
-      if(user){
+      UsersState.users.forEach(user => console.log(user.name));
+      if(user && user.room){
         io.to(user.room).emit('message', buildMsg(ADMIN,`${user.name} has left the room`));
         io.to(user.room).emit('userListInRoom',{
           users:getUsersInRoom(user.room)
         });
         io.emit('roomsList', {
           rooms:getAllActiveRooms()
-        })
+        });
       }
       
       io.emit("allUsers", {
@@ -114,9 +114,9 @@ module.exports = (expressServer)=>{
   }
 
   function removeDisconnectedUser(id){
-    UsersState.setUsers([
-      ...UsersState.users.filter(user => user.id !== id)
-    ]);
+    UsersState.setUsers(
+      UsersState.users.filter(user => user.id !== id)
+    )
   }
   function addUserConnected(id){
     const newUser = {id};
@@ -133,8 +133,9 @@ module.exports = (expressServer)=>{
       newUser
     ]);
   }
-  function activateUser(id, name, room){
-    const newUser = {id, name, room};
+  function activateUser(id, room){
+    const newUser = getUser(id);
+    newUser.room = room;
     UsersState.setUsers([
       ...UsersState.users.filter(user=>user.id !== id),
       newUser
@@ -142,7 +143,8 @@ module.exports = (expressServer)=>{
     return newUser;
   }
   function removeUserFromRoom(id, io, currentRoom){
-    const newUser = {id};
+    const newUser = getUser(id);
+    newUser.room = undefined;
     UsersState.setUsers([
       ...UsersState.users.filter(user=>user.id !== id),
       newUser
@@ -157,7 +159,8 @@ module.exports = (expressServer)=>{
     return UsersState.users.find(user => user.id === id);
   }
   function getUsersOnline(){
-    return UsersState.users.filter(user => user.name !== undefined);
+    return UsersState.users;
+    // return UsersState.users.filter(user => user.name !== undefined);
   }
   function getUsersInRoom(room){
     return UsersState.users.filter(user => user.room === room);

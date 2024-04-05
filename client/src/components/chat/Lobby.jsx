@@ -1,33 +1,41 @@
 import { useRef } from "react";
 import { socket } from "../../socket";
 import PropTypes from 'prop-types';
-export default function Lobby({roomList, userList, username}){
+export default function Lobby({roomList}){
   const roomNameRef = useRef(null);
   
+  // const joinRoom = (roomName) => {
+  //   socket.emit('enterRoom', {
+  //     room:roomName
+  //   });
+  // }
   const enterRoom = (e) =>{
     e.preventDefault();
     if(roomNameRef.current.value){
       socket.emit('enterRoom', {
-        room: roomNameRef.current.value,
-        name: username
+        room: roomNameRef.current.value
       });
     }
   }
   return (
     <>
+      <h1 style={styles.h1}>Lobby</h1>
       <div style={styles.container}>
-        <h1 style={styles.h1}>Lobby</h1><h3  style={styles.h1}>{username}</h3>
-      </div>
-      <form style={styles.form} className="form-join" onSubmit={enterRoom}>
         
-        <input ref={roomNameRef} style={styles.formInput} type="text" id="room" placeholder="Chat room" size="5" required />
-        <button id="form-join" type="submit">Join</button>
-      </form>
-      <ul>
-        { roomList.map((room, index) => (
-          <li key={index}>{room}</li>
-        ))}
-      </ul>
+        <div style={styles.form}>
+          {/* <ul>
+            { roomList.map((room, index) => (
+              <li key={index}><button onClick={() => joinRoom(room)}>{room}</button></li>
+            ))}
+          </ul> */}
+          <hr></hr>
+          <form className="form-join" onSubmit={enterRoom}>
+            <input ref={roomNameRef} style={styles.formInput} type="text" id="room" placeholder="Chat room" size="5" required />
+            <button style={styles.formButton} id="form-join" type="submit">Join</button>
+          </form>
+        </div>
+        
+      </div>
     </>
   );
 }
@@ -41,22 +49,25 @@ const styles = {
     alignSelf:'baseline'
   },
   form : {
-    width: '100%',
-    margin: 'auto',
-    maxWidth: '600px',
-    display: 'flex',
-    flexFlow: 'row wrap',
-    justifyContent: 'center',
-    gap: '.25rem'
+    maxWidth: '300px',
+    minWidth: '40%',
+    display: 'block',
+    paddingBottom: '50px'
   },
   formInput:{
-    flexGrow:'1',
-    maxWidth:'calc(80% - .25rem)'
+    height:'30px',
+    width:'95%'
+  },
+  formButton:{
+    display:'block',
+    float:'right',
+    marginTop: '10px'
+  },
+  div:{
+
   }
 }
 
 Lobby.propTypes = {
-  roomList: PropTypes.array,
-  userList: PropTypes.array,
-  username: PropTypes.string.isRequired
+  roomList: PropTypes.array
 }

@@ -6,6 +6,9 @@ import ConnectionManager from '../components/ConnectionManager';
 import Lobby from '../components/chat/Lobby';
 import Room from '../components/chat/Room';
 import Connect from '../components/chat/Connect';
+import UserList from '../components/chat/UserList';
+import RoomList from '../components/chat/RoomList';
+import NewRoom from '../components/chat/NewRoom';
 
 export default function ChatManager(){
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -52,7 +55,6 @@ export default function ChatManager(){
       console.log(data);
     }
     function allUsers({users}){
-      console.log(users);
       setUserList(users);
     }
     function userListInRoom({users}){
@@ -62,6 +64,7 @@ export default function ChatManager(){
       }));
     }
     function roomsList({rooms}){
+      console.log("rooms updated: " + rooms.length)
       setRoomList(rooms);
     }
     function joinedRoom({success, roomName}){
@@ -91,26 +94,41 @@ export default function ChatManager(){
       socket.off('message', message);
       socket.off('allUsers', allUsers);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   function connect(name){
     setUsername(name);
     socket.connect();
   }
   function render(){
-    if(isConnected){
-      if(myRoom.inRoom){
-        return (<Room room={myRoom} roomList={roomList}/>);
-      }else{
-        return (<Lobby roomList={roomList} userList={userList} username={username}/>);
-      }
+    // if(isConnected){
+    if(myRoom.inRoom){
+      return (<></>);
     }else{
-      return (<Connect connect={connect}/>);
+      return (<Lobby roomList={roomList}/>);
     }
+    // }else{
+    //   return (<Connect connect={connect}/>);
+    // }
   }
   
   return (
     <>
-      {render()}
+      {isConnected ? (
+        <div>
+          <div>
+            <NewRoom/>
+            <RoomList room={myRoom} list={roomList} />
+          </div>
+          {/* <Lobby roomList={roomList}/> */}
+          {/* {render()} */}
+          <div>
+            <UserList list={userList} username={username} />
+          </div>
+        </div>
+      ) : (
+        <Connect connect={connect}/>
+      )}
       
       <ConnectionState isConnected={isConnected}/>
       <Events events={ fooEvents}/>
