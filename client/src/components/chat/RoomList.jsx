@@ -12,7 +12,6 @@ export default function RoomList({room, list}){
     <h4>Rooms:</h4>
     <ul>
       { list.map((r, index) => {
-        console.log(r);
         if(r === room.roomName){
           return <li key={index}>{r}</li>
         }else{

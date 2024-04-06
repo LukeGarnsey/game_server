@@ -56,7 +56,7 @@ export default function ChatManager(){
     }
     function message(data){
       setMessages(previous => [...previous, data]);
-      console.log(data);
+      // console.log(data);
     }
     function allUsers({users}){
       setUserList(users);
@@ -115,6 +115,14 @@ export default function ChatManager(){
     //   return (<Connect connect={connect}/>);
     // }
   }
+  function consumeMessage(){
+    if(messages.length == 0)
+      return undefined;
+    
+    const newMessage = messages.shift();
+    setMessages(messages);
+    return newMessage;
+  }
   
   return (
     <>
@@ -125,7 +133,7 @@ export default function ChatManager(){
             <RoomList room={myRoom} list={roomList} />
           </div>
           <div style={styles.container}>
-            <ChatWindow room={myRoom} />
+            <ChatWindow room={myRoom} messages={messages} consumeMessage={consumeMessage}/>
             <ChatTextEntry username={username}/>
           </div>
           {/* <Lobby roomList={roomList}/> */}
