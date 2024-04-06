@@ -10,6 +10,7 @@ export default function NewRoom(){
       socket.emit('enterRoom', {
         room: roomNameRef.current.value
       });
+      roomNameRef.current.value = '';
     }
   }
   return (
@@ -24,10 +25,12 @@ export default function NewRoom(){
 
 const styles = {
   formInput:{
+    margin:'5px',
     height:'30px',
-    width:'300px'
+    width:'90%'
   },
   formButton:{
+    margin:'5px',
     display:'block',
     marginTop: '10px'
   }

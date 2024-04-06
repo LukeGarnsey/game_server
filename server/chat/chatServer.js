@@ -88,7 +88,9 @@ module.exports = (expressServer)=>{
       console.log(`User ${socket.id} disconnect`);
     });
     socket.on('message', ({name, text}) =>{
+      
       const room = getUser(socket.id)?.room;
+      console.log(`message-${room}-${name}: ${text}`);
       if(room){
         io.to(room).emit('message', buildMsg(name, text)); 
       }

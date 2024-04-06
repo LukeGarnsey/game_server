@@ -9,6 +9,8 @@ import Connect from '../components/chat/Connect';
 import UserList from '../components/chat/UserList';
 import RoomList from '../components/chat/RoomList';
 import NewRoom from '../components/chat/NewRoom';
+import ChatWindow from '../components/chat/ChatWindow';
+import ChatTextEntry from '../components/chat/ChatTextEntry';
 
 export default function ChatManager(){
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -16,6 +18,7 @@ export default function ChatManager(){
   const [userList, setUserList] = useState([]);
   const [roomList, setRoomList] = useState([]);
   const [username, setUsername] = useState("");
+  const [messages, setMessages] = useState([]);
 
   const myRoomDefaultObj = {
     inRoom:false,
@@ -52,6 +55,7 @@ export default function ChatManager(){
       setFooEvents(previous => [...previous, value]);
     }
     function message(data){
+      setMessages(previous => [...previous, data]);
       console.log(data);
     }
     function allUsers({users}){
@@ -115,14 +119,18 @@ export default function ChatManager(){
   return (
     <>
       {isConnected ? (
-        <div>
-          <div>
+        <div style={styles.mainContainer}>
+          <div style={{...styles.container, ...styles.roomContainer}}>
             <NewRoom/>
             <RoomList room={myRoom} list={roomList} />
           </div>
+          <div style={styles.container}>
+            <ChatWindow room={myRoom} />
+            <ChatTextEntry username={username}/>
+          </div>
           {/* <Lobby roomList={roomList}/> */}
           {/* {render()} */}
-          <div>
+          <div style={{...styles.container, ...styles.userListContainer}}>
             <UserList list={userList} username={username} />
           </div>
         </div>
@@ -135,4 +143,22 @@ export default function ChatManager(){
       <ConnectionManager />
     </>
   );
+}
+
+const styles = {
+  mainContainer : {
+    display:'flex',
+    flexWrap:'noWrap'
+  },
+  container : {
+    flexGrow: '3',
+    margin: '5px',
+    border: '1px solid black'
+  },
+  roomContainer:{
+    flexGrow: '2'
+  },
+  userListContainer:{
+    flexGrow: '1'
+  }
 }
