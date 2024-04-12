@@ -14,7 +14,7 @@ export default function ChatTextEntry({username}){
   }
   return (
   <>
-    <form className='form-msg' onSubmit={onSubmit}>
+    <form className='form-msg container' onSubmit={onSubmit}>
       <input style={styles.input} type='text' ref={messageRef} placeholder='Your message' required />
       <button style={styles.button} type='submit'><span>Send</span></button>
     </form>

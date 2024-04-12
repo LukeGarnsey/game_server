@@ -8,7 +8,7 @@ export default function RoomList({room, list}){
   }
   
   return (
-  <div style={styles.container}>
+  <div className='container'>
     <h4>Rooms:</h4>
     <ul>
       { list.map((r, index) => {
@@ -26,11 +26,4 @@ export default function RoomList({room, list}){
 RoomList.propTypes = {
   room:PropTypes.object.isRequired,
   list: PropTypes.array
-}
-
-const styles = {
-  container:{
-    margin:'5px',
-    width:'50px'
-  }
 }

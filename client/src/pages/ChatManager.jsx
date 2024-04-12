@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 import ConnectionState from '../components/ConnectionState';
 import Events from '../components/Events';
 import ConnectionManager from '../components/ConnectionManager';
-import Lobby from '../components/chat/Lobby';
-import Room from '../components/chat/Room';
 import Connect from '../components/chat/Connect';
 import UserList from '../components/chat/UserList';
 import RoomList from '../components/chat/RoomList';
@@ -56,7 +54,7 @@ export default function ChatManager(){
     }
     function message(data){
       setMessages(previous => [...previous, data]);
-      // console.log(data);
+      console.log(data);
     }
     function allUsers({users}){
       setUserList(users);
@@ -72,11 +70,16 @@ export default function ChatManager(){
       setRoomList(rooms);
     }
     function joinedRoom({success, roomName}){
+      if(myRoom.inRoom){
+        console.log('LEFT MESSAGE');
+        setMessages(previous => [...previous, {name:"Admin-room-l", text:myRoom.roomName}]);
+      }
       setMyRoom(prevState =>({
         ...prevState,
         inRoom:success,
         roomName: roomName,
       }));
+      setMessages(previous => [...previous, {name:"Admin-room", text:roomName}])
     }
     
     socket.on('connect', onConnect);
@@ -104,17 +107,6 @@ export default function ChatManager(){
     setUsername(name);
     socket.connect();
   }
-  function render(){
-    // if(isConnected){
-    if(myRoom.inRoom){
-      return (<></>);
-    }else{
-      return (<Lobby roomList={roomList}/>);
-    }
-    // }else{
-    //   return (<Connect connect={connect}/>);
-    // }
-  }
   function consumeMessage(){
     if(messages.length == 0)
       return undefined;
@@ -134,10 +126,11 @@ export default function ChatManager(){
           </div>
           <div style={styles.container}>
             <ChatWindow room={myRoom} messages={messages} consumeMessage={consumeMessage}/>
+          {myRoom.inRoom && 
             <ChatTextEntry username={username}/>
+          }
           </div>
-          {/* <Lobby roomList={roomList}/> */}
-          {/* {render()} */}
+          
           <div style={{...styles.container, ...styles.userListContainer}}>
             <UserList list={userList} username={username} />
           </div>

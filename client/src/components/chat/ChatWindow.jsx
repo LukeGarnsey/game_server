@@ -4,31 +4,35 @@ import Post from './Post';
 export default function ChatWindow({room, messages, consumeMessage}){
   const [posts, setPosts] = useState([]);
   useEffect(()=>{
-      const newMessage = consumeMessage();
-      if(newMessage !== undefined){
-        // console.log("create new message: " + newMessage.name + ": " + newMessage.text);
-        setPosts(prevState => [...prevState, <Post key={prevState.length} name={newMessage.name} body={newMessage.text}/>])
-      }
+    let newMessage;
+    const newMessages = [];
+    while((newMessage = consumeMessage()) !== undefined){
+      newMessages.push(newMessage);
+    }
+    setPosts(prevState => [...prevState, 
+      ...newMessages.map((message) => <Post key={prevState.length} name={setName(message.name)} body={message.text}/>)]);
   }, [messages]);
+  function setName(name){
+    
+    return name;
+  }
   return (
     <>
-    <h2>{room.roomName}</h2>
-      <ul className='chat-display'>
-        { posts.map((post, index) => (
-          <li key={index}>
-            {post}
-          </li>
-         ))}
-      </ul>
+    <div className='container'>
+        <div className='chat-display'>
+          { posts.map((post, index) => (
+            <div key={index}>
+              {post}
+            </div>
+          ))}
+        </div>
+      </div>
     </>
   );
 }
-// const styles = {
-
-// }
 
 ChatWindow.propTypes = {
-  room:PropTypes.object.isRequired,
+  room:PropTypes.object,
   messages: PropTypes.array,
   consumeMessage: PropTypes.func
 }

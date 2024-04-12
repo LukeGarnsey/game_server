@@ -15,7 +15,7 @@ export default function NewRoom(){
   }
   return (
     <>
-      <form className="form-join" onSubmit={enterRoom}>
+      <form className="form-join container" onSubmit={enterRoom}>
         <input ref={roomNameRef} style={styles.formInput} type="text" id="room" placeholder="Chat room" size="5" required />
         <button style={styles.formButton} id="form-join" type="submit">Join</button>
       </form>

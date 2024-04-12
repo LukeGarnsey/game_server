@@ -17,7 +17,7 @@ module.exports = (expressServer)=>{
   io.on('connection', socket =>{
     console.log(`User ${socket.id} connect`);
     addUserConnected(socket.id);
-    socket.emit('message', buildMsg(ADMIN, "Welcome to Chat Rooms App"));
+    socket.emit('message', buildMsg(ADMIN, "Welcome! Join a room to get started."));
     io.emit('roomsList', {
       rooms: getAllActiveRooms()
     });
@@ -55,7 +55,7 @@ module.exports = (expressServer)=>{
       socket.join(user.room);
       
       socket.emit('joinedRoom', {success:true, roomName: room});
-      socket.emit('message', buildMsg(ADMIN, `You have joined the ${user.room} chat room.`));
+      // socket.emit('message', buildMsg(ADMIN, `Room ${user.room}`));
       //to everyone else
       // socket.broadcast.to(user.room).emit('message', buildMsg(ADMIN, `${user.name} has joined the room`));
   

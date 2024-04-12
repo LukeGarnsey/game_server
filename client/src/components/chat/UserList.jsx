@@ -4,7 +4,7 @@ export default function UserList({list, username}){
 
   return (
     <>
-      <div>
+      <div className='container'>
         <h4>users online</h4>
         <ul>
           <li><b>{username}</b></li>
