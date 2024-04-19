@@ -66,12 +66,10 @@ export default function ChatManager(){
       }));
     }
     function roomsList({rooms}){
-      console.log("rooms updated: " + rooms.length)
       setRoomList(rooms);
     }
     function joinedRoom({success, roomName}){
       if(myRoom.inRoom){
-        console.log('LEFT MESSAGE');
         setMessages(previous => [...previous, {name:"Admin-room-l", text:myRoom.roomName}]);
       }
       setMyRoom(prevState =>({
@@ -132,7 +130,7 @@ export default function ChatManager(){
           </div>
           
           <div style={{...styles.container, ...styles.userListContainer}}>
-            <UserList list={userList} username={username} />
+            <UserList list={userList} username={username} myRoom={myRoom}/>
           </div>
         </div>
       ) : (
@@ -157,7 +155,7 @@ const styles = {
     border: '1px solid black'
   },
   roomContainer:{
-    flexGrow: '2'
+    flexGrow: '1'
   },
   userListContainer:{
     flexGrow: '1'
