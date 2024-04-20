@@ -128,8 +128,12 @@ module.exports = (expressServer)=>{
     ]);
   }
   function addUsername(id, name){
-    const newUser = {id, name};
-    console.log("new User: " + newUser.name);
+    const newUser = getUser(id);
+    if(newUser === undefined)
+      newUser = {id, name};
+    else
+      newUser.name = name;
+    
     UsersState.setUsers([
       ...UsersState.users.filter(user => user.id !== id),
       newUser

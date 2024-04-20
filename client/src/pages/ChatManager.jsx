@@ -1,7 +1,7 @@
 import { socket } from '../socket';
+import { useLobby, UseUsername, useConnectionState, useMessages, useRoom } from '../socketHandlers/socketChatEvents';
 import { useEffect, useState } from 'react';
 import ConnectionState from '../components/ConnectionState';
-import Events from '../components/Events';
 import ConnectionManager from '../components/ConnectionManager';
 import Connect from '../components/chat/Connect';
 import UserList from '../components/chat/UserList';
@@ -11,37 +11,17 @@ import ChatWindow from '../components/chat/ChatWindow';
 import ChatTextEntry from '../components/chat/ChatTextEntry';
 
 export default function ChatManager(){
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState([]);
+  const {isConnected, handleConnect, setIsConnected, socketConnect} = useConnectionState();
   const [userList, setUserList] = useState([]);
-  const [roomList, setRoomList] = useState([]);
-  const [username, setUsername] = useState("");
-  const [messages, setMessages] = useState([]);
 
-  const myRoomDefaultObj = {
-    inRoom:false,
-    roomName:'',
-    users:[],
-    leaveRoom : () =>{
-      socket.emit('leaveRoom');
-      setMyRoom(prevState =>({
-        ...prevState,
-        inRoom: false
-      }));
-    }
-  }
-  const [myRoom, setMyRoom] = useState(myRoomDefaultObj);
+  const {roomList, setRoomList, handleRoomList} = useLobby();
+  const {username, setAndEmitName, setUsername} = UseUsername();
+  const {messages, handleMessage, consumeMessage} = useMessages();
+  const {myRoom, handleJoinRoom, setMyRoom, myRoomDefaultObj, handleRoomUserList} = useRoom();
+
   
   useEffect(()=>{
-    if(username){
-      socket.emit("addUsername", {name:username});
-    }
-  }, [username]);
-  
-  useEffect(()=>{
-    function onConnect(){
-      setIsConnected(true);
-    }
+    
     function onDisconnect(){
       setIsConnected(false);
       setUsername("");
@@ -49,69 +29,33 @@ export default function ChatManager(){
       setRoomList([]);
       setMyRoom(myRoomDefaultObj);
     }
-    function onFooEvent(value){
-      setFooEvents(previous => [...previous, value]);
-    }
-    function message(data){
-      setMessages(previous => [...previous, data]);
-      console.log(data);
-    }
+    
     function allUsers({users}){
       setUserList(users);
     }
-    function userListInRoom({users}){
-      setMyRoom(prevState =>({
-        ...prevState,
-        users:users
-      }));
-    }
-    function roomsList({rooms}){
-      setRoomList(rooms);
-    }
-    function joinedRoom({success, roomName}){
-      if(myRoom.inRoom){
-        setMessages(previous => [...previous, {name:"Admin-room-l", text:myRoom.roomName}]);
-      }
-      setMyRoom(prevState =>({
-        ...prevState,
-        inRoom:success,
-        roomName: roomName,
-      }));
-      setMessages(previous => [...previous, {name:"Admin-room", text:roomName}])
-    }
     
-    socket.on('connect', onConnect);
+    socket.on('connect', handleConnect);
     socket.on('disconnect', onDisconnect);
-    socket.on('joinedRoom', joinedRoom);
-    socket.on('foo', onFooEvent);
-    socket.on('userListInRoom', userListInRoom);
-    socket.on('roomsList', roomsList);
-    socket.on('message', message);
+    socket.on('joinedRoom', handleJoinRoom);
+    socket.on('userListInRoom', handleRoomUserList);
+    socket.on('roomsList', handleRoomList);
+    socket.on('message', handleMessage);
     socket.on('allUsers', allUsers);
 
     return () => {
-      socket.off('connect', onConnect);
+      socket.off('connect', handleConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('joinedRoom', joinedRoom);
-      socket.off('foo', onFooEvent);
-      socket.off('userListInRoom', userListInRoom);
-      socket.off('roomsList', roomsList);
-      socket.off('message', message);
+      socket.off('joinedRoom', handleJoinRoom);
+      socket.off('userListInRoom', handleRoomUserList);
+      socket.off('roomsList', handleRoomList);
+      socket.off('message', handleMessage);
       socket.off('allUsers', allUsers);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   function connect(name){
-    setUsername(name);
-    socket.connect();
-  }
-  function consumeMessage(){
-    if(messages.length == 0)
-      return undefined;
-    
-    const newMessage = messages.shift();
-    setMessages(messages);
-    return newMessage;
+    socketConnect();
+    setAndEmitName(name);
   }
   
   return (
@@ -138,7 +82,6 @@ export default function ChatManager(){
       )}
       
       <ConnectionState isConnected={isConnected}/>
-      <Events events={ fooEvents}/>
       <ConnectionManager />
     </>
   );
