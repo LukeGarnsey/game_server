@@ -74,18 +74,13 @@ export function useRoom(){
 }
 
 export function useLobby() {
-  const [roomList, setRoomList] = useState([]);
-  const handleRoomList = ({rooms})=>{
-    setRoomList(rooms);
+  const [roomList, setRoomList] = useState({rooms:[], users:[]});
+  const handleRoomList = ({rooms, users})=>{
+    console.log({rooms, users});
+    setRoomList({rooms, users});
   }
   return {roomList, setRoomList, handleRoomList};
 }
-
-// export function handleConnect(setIsConnected){
-//   return ()=>{
-//     setIsConnected(true);
-//   };
-// }
 
 
 export function handleDisonnect(setIsConnected, setUsername, setUserList, 
@@ -98,38 +93,3 @@ setRoomList, setMyRoom, myRoomDefaultObj){
     setMyRoom(myRoomDefaultObj);
   };
 }
-
-// export function handleJoinedRoom(setMessages, setMyRoom, myRoom){
-//   return ({success, roomName}) =>{
-//     if(myRoom.inRoom){
-//       setMessages(previous => [...previous, {name:"Admin-room-l", text:myRoom.roomName}]);
-//     }
-//     setMyRoom(prevState =>({
-//       ...prevState,
-//       inRoom:success,
-//       roomName: roomName,
-//     }));
-//     setMessages(previous => [...previous, {name:"Admin-room", text:roomName}]);
-//   };
-// }
-
-// export function handleRoomUserList(setMyRoom){
-//   return ({users})=>{
-//     setMyRoom(prevState =>({
-//       ...prevState,
-//       users:users
-//     }));
-//   }
-// }
-
-// export function handleRoomList(setRoomList){
-//   return ({rooms})=>{
-//     setRoomList(rooms);
-//   }
-// }
-
-// export function handleMessage(setMessages){
-//   return (data) => {
-//     setMessages(previous => [...previous, data]);
-//   }
-// }

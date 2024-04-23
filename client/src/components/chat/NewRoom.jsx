@@ -6,7 +6,6 @@ export default function NewRoom(){
   const enterRoom = (e) =>{
     e.preventDefault();
     if(roomNameRef.current.value){
-      console.log("Join the room");
       socket.emit('enterRoom', {
         room: roomNameRef.current.value
       });
@@ -16,8 +15,8 @@ export default function NewRoom(){
   return (
     <>
       <form className="form-join container" onSubmit={enterRoom}>
-        <input ref={roomNameRef} style={styles.formInput} type="text" id="room" placeholder="Chat room" size="5" required />
-        <button style={styles.formButton} id="form-join" type="submit">Join</button>
+        <input ref={roomNameRef} style={styles.formInput} type="text" id="room" placeholder="New Channel" size="5" required />
+        <button style={styles.formButton} id="form-join" type="submit">New Channel</button>
       </form>
     </>
   );

@@ -8,22 +8,57 @@ export default function RoomList({room, list}){
   }
   
   return (
-  <div className='container'>
-    <h4>Rooms:</h4>
-    <ul>
-      { list.map((r, index) => {
+  <div className='container' style={styles.cont}>
+    <h4>Active Rooms:</h4>
+    <div style={styles.startMargin}>
+      { list.rooms.map((r, index) => {
         if(r === room.roomName){
-          return <li key={index}>{r}</li>
+          return <div style={styles.myRoom} key={index}><h3 style={styles.margin}>{r}</h3>
+          <ul>
+            {list.users[index].map((u, i) =>{
+              return <li key={i + 's'}>{u.name}</li>
+            })}
+            </ul></div>
         }else{
-          return <li key={index}><button onClick={() => joinRoom(r)}>{r}</button></li>
+          return <div style={styles.button} key={index}><button onClick={() => joinRoom(r)}>{r}</button>
+            <ul>
+            {list.users[index].map((u, i) =>{
+              return <li key={i + 's'}>{u.name}</li>
+            })}
+            </ul>
+          </div>
         }
       })}
-    </ul>
+    </div>
   </div>
   );
 }
 
 RoomList.propTypes = {
   room:PropTypes.object.isRequired,
-  list: PropTypes.array
+  list: PropTypes.object
+}
+
+const styles = {
+  cont:{
+    width:'200px'
+  },
+  button:{
+    paddingBottom:'10px',
+    color:'grey',
+    border: '2px solid black',
+    padding: '10px'
+  },
+  myRoom:{
+    color:'white',
+    paddingBottom:'10px',
+    border: '2px solid white',
+    padding: '10px'
+  },
+  startMargin:{
+    marginLeft:'15px'
+  },
+  margin:{
+    margin:'5px'
+  }
 }

@@ -18,9 +18,16 @@ module.exports = (expressServer)=>{
     console.log(`User ${socket.id} connect`);
     addUserConnected(socket.id);
     socket.emit('message', buildMsg(ADMIN, "Welcome! Join a room to get started."));
-    io.emit('roomsList', {
-      rooms: getAllActiveRooms()
-    });
+    
+    const rooms = getAllActiveRooms();
+      const users = [];
+      rooms.forEach(room =>{
+        users.push(getUsersInRoom(room));
+      });    
+      io.emit('roomsList', {
+        rooms: getAllActiveRooms(),
+        users:users
+      });
 
     socket.on('addUsername', ({name})=>{
       addUsername(socket.id, name);
@@ -36,8 +43,15 @@ module.exports = (expressServer)=>{
         socket.leave(currentRoom);
         io.to(currentRoom).emit('message', buildMsg(ADMIN, `${user.name} has left the room`));
         removeUserFromRoom(socket.id, io, currentRoom);
+
+        const rooms = getAllActiveRooms();
+        const users = [];
+        rooms.forEach(room =>{
+          users.push(getUsersInRoom(room));
+        });    
         io.emit('roomsList', {
-          rooms: getAllActiveRooms()
+          rooms: getAllActiveRooms(),
+          users:users
         });
       }
     });
@@ -62,9 +76,15 @@ module.exports = (expressServer)=>{
       //update user list form room
       io.to(user.room).emit('userListInRoom', {
         users: getUsersInRoom(user.room)
+      });
+      const rooms = getAllActiveRooms();
+      const users = [];
+      rooms.forEach(room =>{
+        users.push(getUsersInRoom(room));
       });    
       io.emit('roomsList', {
-        rooms: getAllActiveRooms()
+        rooms: getAllActiveRooms(),
+        users:users
       });
     });
   
@@ -77,8 +97,14 @@ module.exports = (expressServer)=>{
         io.to(user.room).emit('userListInRoom',{
           users:getUsersInRoom(user.room)
         });
+        const rooms = getAllActiveRooms();
+        const users = [];
+        rooms.forEach(room =>{
+          users.push(getUsersInRoom(room));
+        }); 
         io.emit('roomsList', {
-          rooms:getAllActiveRooms()
+          rooms:getAllActiveRooms(),
+          users:users
         });
       }
       

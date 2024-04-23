@@ -1,10 +1,8 @@
 import { socket } from '../socket';
 import { useLobby, UseUsername, useConnectionState, useMessages, useRoom } from '../socketHandlers/socketChatEvents';
-import { useEffect, useState } from 'react';
-import ConnectionState from '../components/ConnectionState';
+import { useEffect } from 'react';
 import ConnectionManager from '../components/ConnectionManager';
 import Connect from '../components/chat/Connect';
-import UserList from '../components/chat/UserList';
 import RoomList from '../components/chat/RoomList';
 import NewRoom from '../components/chat/NewRoom';
 import ChatWindow from '../components/chat/ChatWindow';
@@ -12,7 +10,6 @@ import ChatTextEntry from '../components/chat/ChatTextEntry';
 
 export default function ChatManager(){
   const {isConnected, handleConnect, setIsConnected, socketConnect} = useConnectionState();
-  const [userList, setUserList] = useState([]);
 
   const {roomList, setRoomList, handleRoomList} = useLobby();
   const {username, setAndEmitName, setUsername} = UseUsername();
@@ -25,13 +22,8 @@ export default function ChatManager(){
     function onDisconnect(){
       setIsConnected(false);
       setUsername("");
-      setUserList([]);
-      setRoomList([]);
+      setRoomList({rooms:[], users:[]});
       setMyRoom(myRoomDefaultObj);
-    }
-    
-    function allUsers({users}){
-      setUserList(users);
     }
     
     socket.on('connect', handleConnect);
@@ -40,7 +32,6 @@ export default function ChatManager(){
     socket.on('userListInRoom', handleRoomUserList);
     socket.on('roomsList', handleRoomList);
     socket.on('message', handleMessage);
-    socket.on('allUsers', allUsers);
 
     return () => {
       socket.off('connect', handleConnect);
@@ -49,7 +40,6 @@ export default function ChatManager(){
       socket.off('userListInRoom', handleRoomUserList);
       socket.off('roomsList', handleRoomList);
       socket.off('message', handleMessage);
-      socket.off('allUsers', allUsers);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -73,15 +63,14 @@ export default function ChatManager(){
           }
           </div>
           
-          <div style={{...styles.container, ...styles.userListContainer}}>
+          {/* <div style={{...styles.container, ...styles.userListContainer}}>
             <UserList list={userList} username={username} myRoom={myRoom}/>
-          </div>
+          </div> */}
         </div>
       ) : (
         <Connect connect={connect}/>
       )}
       
-      <ConnectionState isConnected={isConnected}/>
       <ConnectionManager />
     </>
   );
