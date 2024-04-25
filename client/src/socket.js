@@ -1,7 +1,6 @@
 import {io} from 'socket.io-client';
+import './env';
 
-const URL = 'http://localhost:3001'; //process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:4000';
-
-export const socket = io(URL, {
+export const socket = io(window.REACT_APP_SERVER_URL, {
   autoConnect:false
 });
