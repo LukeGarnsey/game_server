@@ -20,12 +20,16 @@ export default function Game(){
     function gameOver(){
       console.log("Game Over");
     }
+    function searching({msg}){
+      console.log(msg);
+    }
     
     socket.on('connect', handleConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('welcome', welcome);
     socket.on('gameTime', gameTime);
     socket.on('gameOver', gameOver);
+    socket.on('searching', searching);
 
     return () => {
       socket.off('connect', handleConnect);
@@ -33,6 +37,7 @@ export default function Game(){
       socket.off('welcome', welcome);
       socket.off('gameTime', gameTime);
       socket.off('gameOver', gameOver);
+      socket.off('searching', searching);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -40,7 +45,7 @@ export default function Game(){
     socketConnect();
   }
   function join(){
-    socket.emit('placeInGame', {
+    socket.emit('search', {
 
     })
   }
