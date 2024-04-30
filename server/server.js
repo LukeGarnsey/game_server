@@ -1,5 +1,6 @@
 const express = require("express");
 const chatServer = require("./chat/chatServer");
+const gameServer = require("./game/gameServer");
 const path = require('path');
 require('dotenv').config({path: path.resolve(__dirname, '../.env') });
 const PORT = process.env.PORT || 3001;
@@ -24,4 +25,5 @@ const expressServer = app.listen(PORT, () =>{
   console.log(`Server running on port ${PORT}`);
 });
 
-chatServer(expressServer)
+// chatServer(expressServer)
+gameServer(expressServer);
