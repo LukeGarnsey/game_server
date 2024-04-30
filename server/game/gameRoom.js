@@ -1,44 +1,68 @@
 
 module.exports = (io, clientsInGame, gameId, exitGame)=>{
-
+  const {tickUpdateMS } = require("./util/constants");
+  
   const game = {
-    clients: {
-      clients:clientsInGame,
-      setClients: function(newClientArray){
-        this.clients = newClientArray;
-      },
-      addClient:function(client){
-        const newClient = {id:client.id};
-        this.setClients([
-          ...this.clients.filter(c => c.id !== newClient.id),
-          newClient
-        ]);
-      },
-      removeClient:function(client){
-        this.setClients(
-          this.clients.filter(c => c.id !== client.id)
-        );
-      }
+    clients: require("./util/clients")(),
+    gameTimeSeconds:0,
+    gameId, 
+    state:'loading',
+    playerCount: clientsInGame.length,
+    joinGame: function(client){
+      client.join(gameId);
+      this.clients.addClient(client, 'loading');
+
+      
+      //Setup client listeners
+      client.on('ready', ()=>{
+        this.clients.setClientState(client, 'ready');
+      });
+      client.on('disconnect', ()=>{
+        console.log('game disconnect');
+        this.removeSocketListeners(client);
+        this.clients.removeClient(client);
+      });
+        ////
+      client.emit('gameRoom', {
+        gameId
+      });
     },
-    gameTime:0,
-    tickUpdate: 1000/10,
-    gameId
+    removeSocketListeners: function(client){
+      client.removeAllListeners('idle');
+      client.removeAllListeners('search');
+      client.removeAllListeners('placeInGame');
+      client.removeAllListeners('disconnect');
+    }
   };
 
   clientsInGame.forEach(client => {
-      client.join(gameId);
-      //Setup client listeners
+      game.joinGame(client);
   });
-  const secondTick = 1;
   const intervalId = setInterval(()=>{
+    if(game.state === 'loading')
+    {
+      if(game.clients.getClientsWithState('ready').length === game.playerCount){
+        game.state = 'ready';
+        io.to(gameId).emit('gameMessage', {
+          msg:'Starting Game!'
+        });
+      }else{
+        io.to(gameId).emit('gameMessage', {
+          msg:'waiting for players...'
+        });
+      }
+      console.log('loading: '+game.clients.getClientsWithState('loading').length);
+      return;
+    }
     //game logic
-    game.gameTime += game.tickUpdate;
+    game.gameTimeSeconds += tickUpdateMS / 1000;
 
-    io.to(gameId).emit('gameTime', {
-      gameTime:game.gameTime
+    io.to(gameId).emit('gameMessage', {
+      msg:game.gameTimeSeconds
     });
+    // console.log('in game: ' + game.clients.clients.length);
 
-    if(game.gameTime / 1000 > 5)
+    if(game.gameTimeSeconds > 5)
     {
       io.to(gameId).emit('gameOver', {
         
@@ -46,11 +70,12 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
       console.log("end game");
       clearInterval(intervalId);
       clientsInGame.forEach(client => {
+        game.clients.removeClient(client);
         exitGame(game, client);
       });
       
     }
-  }, game.tickUpdate);
+  }, tickUpdateMS);
     
 
   return game;

@@ -1,6 +1,7 @@
 const {Server} = require("socket.io");
 const lobby = require("./lobby");
 const gameRoom = require('./gameRoom');
+const { generateRandomAlphaNumeric } = require("../util/random");
 
 module.exports = (expressServer)=>{
   let activeGameRooms = [];
@@ -9,17 +10,25 @@ module.exports = (expressServer)=>{
       origin: process.env.NODE_ENV === "production"?false:['http://localhost:3000', 'http://127.0.0.1:3000']
     }
   });
-  const lobbyObject = lobby(io);
+  const lobbyObject = lobby(io, placeInGame, joinGame);
   io.on('connection', client =>{
     console.log(`Client ${client.id} connected`);
 
     placeInLobby(client);
     
   });
-  function placeInGame(client){
-    const gameInstance = gameRoom(io, [client], 'myID', exitGame);
+  function placeInGame(clients){
+    const gameInstance = gameRoom(io, clients, generateRandomAlphaNumeric(8), exitGame);
     activeGameRooms.push(gameInstance);
     activeGameRooms.forEach(x=>console.log(x.gameId));
+  }
+  function joinGame(client, gameId){
+    const room = activeGameRooms.find(item => item.gameId === gameId);
+    console.log('join: ' + gameId + ' ' + room);
+    if(room == undefined)
+      return;
+
+    room.joinGame(client);
   }
   function exitGame(gameInstance, client){
     activeGameRooms = [
@@ -29,6 +38,6 @@ module.exports = (expressServer)=>{
     placeInLobby(client);
   }
   function placeInLobby(client){
-    lobbyObject.addClient(client, placeInGame);
+    lobbyObject.addClient(client);
   }
 };

@@ -11,7 +11,7 @@ const router = (
     <Route path='/' element={<App/>}>
       <Route index element={<Home/>} />
       <Route path='chat' element ={<ChatManager/>} />
-
+      <Route path='/:gameId'/>
     </Route>
   </Routes>
 );
