@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { socket } from '../socket';
-import { useConnectionState } from "../socketHandlers/socketChatEvents";
+import { useConnectionState } from "../socketHandlers/socketConnect.js";
 import { useParams } from 'react-router-dom';
+import GameCanvas from '../game/GameCanvas.jsx';
 
 
 export default function Game(){
@@ -66,11 +67,16 @@ export default function Game(){
   return (
     <>
     {isConnected && isRoom ? (
-        <div style={styles.container}>
-          <h1>In Game</h1>
-          
-          <button onClick={ready}>Ready</button>
-        </div>
+        <>
+          <div style={styles.container}>
+            <h1>In Game</h1>
+            
+            <button onClick={ready}>Ready</button>
+
+            
+          </div>
+          <GameCanvas />
+        </>
       ) : (
         <h1>Connecting...</h1>
       )}

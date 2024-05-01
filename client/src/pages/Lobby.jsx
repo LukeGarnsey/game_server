@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { socket } from '../socket';
-import { useConnectionState } from "../socketHandlers/socketChatEvents";
+import { useConnectionState } from "../socketHandlers/socketConnect";
 import { useParams } from 'react-router-dom';
 
 
