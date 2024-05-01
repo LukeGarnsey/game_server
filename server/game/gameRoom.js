@@ -81,7 +81,7 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
       console.log("end game");
       clearInterval(game.clients.pingCheckInterval);
       clearInterval(intervalId);
-      game.clients.forEach(client => {
+      game.clients.clients.forEach(client => {
         game.clients.removeClient(client);
         exitGame(game, io.sockets.sockets.get(client.id));
       });

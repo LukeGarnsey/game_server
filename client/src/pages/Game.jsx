@@ -40,7 +40,9 @@ export default function Game(){
         window.location.href = newHref + gameId;
       }
     }
-    
+    if(!isConnected)
+      connect();
+      
     socket.on('connect', handleConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('welcome', welcome);
