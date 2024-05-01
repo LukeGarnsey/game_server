@@ -9,13 +9,14 @@ export function UseUsername(){
   }
   return {username, setAndEmitName, setUsername};
 }
-export function useConnectionState(){
+export function useConnectionState(onConnect){
   const [isConnected, setIsConnected] = useState(socket.connected);
   const socketConnect = () =>{
     socket.connect();
   };
   const handleConnect = ()=>{
     setIsConnected(true);
+    onConnect();
   };
   return {isConnected, handleConnect, setIsConnected, socketConnect};
 }

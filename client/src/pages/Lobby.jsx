@@ -4,14 +4,8 @@ import { useConnectionState } from "../socketHandlers/socketChatEvents";
 import { useParams } from 'react-router-dom';
 
 
-export default function Game(){
-  const {isConnected, handleConnect, setIsConnected, socketConnect} = useConnectionState(()=>{
-      if(paramGameId !== undefined){
-        socket.emit('joinRoom', {
-          gameId:paramGameId
-        });
-      }
-  });
+export default function Lobby(){
+  const {isConnected, handleConnect, setIsConnected, socketConnect} = useConnectionState(()=>{});
   const {paramGameId} = useParams();
   console.log(paramGameId);
   useEffect(()=>{
@@ -19,9 +13,16 @@ export default function Game(){
     function onDisconnect(){
       setIsConnected(false);
     }
-
-    function gameOver(){
-      console.log("Game Over");
+    function welcome({msg}){
+      console.log("message: " + msg);
+    //   if(paramGameId !== undefined){
+    //     socket.emit('joinRoom', {
+    //       gameId:paramGameId
+    //     });
+    //   }
+    }
+    function searching({msg}){
+      console.log(msg);
     }
     function gameMessage({msg}){
       console.log(msg);
@@ -35,34 +36,39 @@ export default function Game(){
         window.location.href = newHref + gameId;
       }
     }
-    function noRoom(){
-      let newHref = window.location.href;
-      if(paramGameId !== undefined)
-        newHref = newHref.replace(paramGameId, '');
-      window.location.href = newHref;
-    }
     if(!isConnected)
-      socketConnect();
-
+        socketConnect();
+      
     socket.on('connect', handleConnect);
     socket.on('disconnect', onDisconnect);
-    socket.on('gameOver', gameOver);
+    socket.on('welcome', welcome);
+    socket.on('searching', searching);
     socket.on('gameMessage', gameMessage);
     socket.on('gameRoom', gameRoom);
-    socket.on('noRoom', noRoom);
 
     return () => {
       socket.off('connect', handleConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('gameOver', gameOver);
+      socket.off('welcome', welcome);
+      socket.off('searching', searching);
       socket.off('gameMessage', gameMessage);
       socket.off('gameRoom', gameRoom);
-      socket.off('noRoom', noRoom);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  function ready(){
-    socket.emit('ready', {
+
+  function join(){
+    socket.emit('placeInGame', {
+
+    });
+  }
+  function search(){
+    socket.emit('search', {
+
+    });
+  }
+  function stopSearch(){
+    socket.emit('idle', {
 
     });
   }
@@ -70,9 +76,10 @@ export default function Game(){
     <>
     {isConnected ? (
         <div style={styles.container}>
-          <h1>In Game</h1>
-          
-          <button onClick={ready}>Ready</button>
+          <h1>In Lobby</h1>
+          <button onClick={join}>Join Game</button>
+          <button onClick={search}>Search</button>
+          <button onClick={stopSearch}>StopSearch</button>
         </div>
       ) : (
         <h1>Connecting...</h1>
