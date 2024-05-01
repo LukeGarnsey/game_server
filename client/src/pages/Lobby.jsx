@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 export default function Lobby(){
   const {isConnected, handleConnect, setIsConnected, socketConnect} = useConnectionState(()=>{});
   const {paramGameId} = useParams();
-  console.log(paramGameId);
+  
   useEffect(()=>{
     
     function onDisconnect(){

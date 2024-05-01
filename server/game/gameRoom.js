@@ -24,7 +24,8 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
       });
         ////
       client.emit('gameRoom', {
-        gameId
+        gameId,
+        roomExists:true
       });
     },
     removeSocketListeners: function(client){
@@ -38,16 +39,6 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
   clientsInGame.forEach(client => {
       game.joinGame(client);
   });
-  // const pingInterval = setInterval(()=>{
-  //   console.log('ping INterval');
-  //   game.clients.clients.forEach(client => {
-  //     const check = io.sockets.sockets.get(client.id);
-  //     if(check === undefined){
-  //       console.log('found undefined socket');
-  //       game.clients.removeClient(client);
-  //     }
-  //   });
-  // }, 5000);
   const intervalId = setInterval(()=>{
     
     if(game.state === 'loading')

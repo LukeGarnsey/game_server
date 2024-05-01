@@ -25,9 +25,10 @@ module.exports = (expressServer)=>{
   function joinGame(client, gameId){
     const room = activeGameRooms.find(item => item.gameId === gameId);
     console.log('join: ' + gameId + ' ' + room);
-    if(room == undefined)
+    if(room == undefined){
+      client.emit('gameRoom', {roomExists:false});
       return;
-
+    }
     room.joinGame(client);
   }
   function exitGame(gameInstance, client){

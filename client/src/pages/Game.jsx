@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { socket } from '../socket';
 import { useConnectionState } from "../socketHandlers/socketChatEvents";
 import { useParams } from 'react-router-dom';
@@ -13,7 +13,8 @@ export default function Game(){
       }
   });
   const {paramGameId} = useParams();
-  console.log(paramGameId);
+  const [isRoom, setIsRoom] = useState(false);
+  
   useEffect(()=>{
     
     function onDisconnect(){
@@ -22,18 +23,16 @@ export default function Game(){
 
     function gameOver(){
       console.log("Game Over");
+      noRoom();
     }
     function gameMessage({msg}){
       console.log(msg);
     }
-    function gameRoom({gameId}){
-      console.log('your gameroom: ' + gameId);
-      if(!window.location.href.includes(gameId)){
-        let newHref = window.location.href;
-        if(paramGameId !== undefined)
-          newHref = newHref.replace(paramGameId, '');
-        window.location.href = newHref + gameId;
-      }
+    function gameRoom({roomExists}){
+      console.log('Is Room: ' + roomExists);
+      setIsRoom(roomExists);
+      if(!roomExists)
+        noRoom();
     }
     function noRoom(){
       let newHref = window.location.href;
@@ -49,7 +48,6 @@ export default function Game(){
     socket.on('gameOver', gameOver);
     socket.on('gameMessage', gameMessage);
     socket.on('gameRoom', gameRoom);
-    socket.on('noRoom', noRoom);
 
     return () => {
       socket.off('connect', handleConnect);
@@ -57,7 +55,6 @@ export default function Game(){
       socket.off('gameOver', gameOver);
       socket.off('gameMessage', gameMessage);
       socket.off('gameRoom', gameRoom);
-      socket.off('noRoom', noRoom);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -68,7 +65,7 @@ export default function Game(){
   }
   return (
     <>
-    {isConnected ? (
+    {isConnected && isRoom ? (
         <div style={styles.container}>
           <h1>In Game</h1>
           
