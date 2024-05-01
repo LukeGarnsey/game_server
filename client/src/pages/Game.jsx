@@ -6,8 +6,8 @@ import { useParams } from 'react-router-dom';
 
 export default function Game(){
   const {isConnected, handleConnect, setIsConnected, socketConnect} = useConnectionState();
-  const {gameId} = useParams();
-  console.log(gameId);
+  const {paramGameId} = useParams();
+  console.log(paramGameId);
   useEffect(()=>{
     
     function onDisconnect(){
@@ -15,9 +15,9 @@ export default function Game(){
     }
     function welcome({msg}){
       console.log("message: " + msg);
-      if(gameId !== undefined){
+      if(paramGameId !== undefined){
         socket.emit('joinRoom', {
-          gameId
+          gameId:paramGameId
         });
       }
     }
@@ -34,7 +34,10 @@ export default function Game(){
     function gameRoom({gameId}){
       console.log('your gameroom: ' + gameId);
       if(!window.location.href.includes(gameId)){
-        window.location.href = window.location.href + gameId;
+        let newHref = window.location.href;
+        if(paramGameId !== undefined)
+          newHref = newHref.replace(paramGameId, '');
+        window.location.href = newHref + gameId;
       }
     }
     

@@ -1,5 +1,6 @@
-module.exports = () => {
+module.exports = (io) => {
   return{ 
+    io,
     clients:[],
     setClients: function(newClientArray){
       this.clients = newClientArray;
@@ -29,6 +30,20 @@ module.exports = () => {
       this.setClients(
         this.clients.filter(c => c.id !== client.id)
       );
+    },
+    pingCheckInterval:undefined,
+    pingCheck:function(intervalTime, admin){
+      this.pingCheckInterval = 
+       setInterval(()=>{
+        console.log(admin + 'ping INterval');
+        this.clients.forEach(client => {
+          const check = this.io.sockets.sockets.get(client.id);
+          if(check === undefined){
+            console.log(admin + 'found undefined socket');
+            this.removeClient(client);
+          }
+        });
+      }, intervalTime);
     }
   }
 };

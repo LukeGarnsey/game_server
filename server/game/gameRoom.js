@@ -3,7 +3,7 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
   const {tickUpdateMS } = require("./util/constants");
   
   const game = {
-    clients: require("./util/clients")(),
+    clients: require("./util/clients")(io),
     gameTimeSeconds:0,
     gameId, 
     state:'loading',
@@ -34,11 +34,22 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
       client.removeAllListeners('disconnect');
     }
   };
-
+  game.clients.pingCheck(5000, 'gameRoom');
   clientsInGame.forEach(client => {
       game.joinGame(client);
   });
+  // const pingInterval = setInterval(()=>{
+  //   console.log('ping INterval');
+  //   game.clients.clients.forEach(client => {
+  //     const check = io.sockets.sockets.get(client.id);
+  //     if(check === undefined){
+  //       console.log('found undefined socket');
+  //       game.clients.removeClient(client);
+  //     }
+  //   });
+  // }, 5000);
   const intervalId = setInterval(()=>{
+    
     if(game.state === 'loading')
     {
       if(game.clients.getClientsWithState('ready').length === game.playerCount){
@@ -68,10 +79,11 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
         
       });
       console.log("end game");
+      clearInterval(game.clients.pingCheckInterval);
       clearInterval(intervalId);
-      clientsInGame.forEach(client => {
+      game.clients.forEach(client => {
         game.clients.removeClient(client);
-        exitGame(game, client);
+        exitGame(game, io.sockets.sockets.get(client.id));
       });
       
     }

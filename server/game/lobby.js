@@ -2,7 +2,7 @@
 module.exports = (io, placeInGame, joinGame) => {
   const lobby = {
     io,
-    clients:  require("./util/clients")(),
+    clients:  require("./util/clients")(io),
     addClient: function(client){
       this.clients.addClient(client, 'idle');
       client.emit('welcome', {
@@ -46,7 +46,7 @@ module.exports = (io, placeInGame, joinGame) => {
       client.removeAllListeners('disconnect');
     }
   }
-
+  lobby.clients.pingCheck(5000, 'lobby');
   const intervalId = setInterval(()=>{
     const searching = lobby.clients.getClientsWithState('search');
     console.log('searching users count: ',searching.length);
