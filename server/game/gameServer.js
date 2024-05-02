@@ -7,7 +7,7 @@ module.exports = (expressServer)=>{
   let activeGameRooms = [];
   const io = new Server(expressServer, {
     cors:{
-      origin: process.env.NODE_ENV === "production"?false:['http://localhost:3000', 'http://127.0.0.1:3000']
+      origin: process.env.NODE_ENV === "production"?false:['http://localhost:4000', 'http://127.0.0.1:4000']
     }
   });
   const lobbyObject = lobby(io, placeInGame, joinGame);

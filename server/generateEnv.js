@@ -3,7 +3,7 @@
 const fs = require('fs');
 
 const envVariables = {
-  REACT_APP_SERVER_URL: process.env.SERVER_URL || 'http://localhost:3001',
+  REACT_APP_SERVER_URL: process.env.SERVER_URL || 'http://localhost:4001',
   
 };
 
