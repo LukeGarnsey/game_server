@@ -43,7 +43,7 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
     
     if(game.state === 'loading')
     {
-      if(game.clients.getClientsWithState('ready').length === game.playerCount){
+      if(game.clients.getClientsWithState('ready').length > 0 && game.clients.getClientsWithState('ready').length >= this.clients.clients.length){
         game.state = 'ready';
         io.to(gameId).emit('gameMessage', {
           msg:'Starting Game!'

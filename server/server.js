@@ -24,11 +24,11 @@ app.post('/createGame', (req, res) =>{
   const { key } = req.body;
 
   console.log(key);
-
-  res.status(200).json({data:'recieved'});
+  const game = placeInGame([]);
+  res.status(200).json({data:{url: `http://localhost:${PORT}/${game.gameId}`, gameId: game.gameId}});
 });
 const expressServer = app.listen(PORT, () =>{
   console.log(`Server running on port ${PORT}`);
 });
 
-gameServer(expressServer)
+const placeInGame = gameServer(expressServer)

@@ -21,6 +21,13 @@ module.exports = (expressServer)=>{
     const gameInstance = gameRoom(io, clients, generateRandomAlphaNumeric(8), exitGame);
     activeGameRooms.push(gameInstance);
     activeGameRooms.forEach(x=>console.log(x.gameId));
+    return gameInstance;
+  }
+  const placeInGameFunction = (clients) => {
+    const gameInstance = gameRoom(io, clients, generateRandomAlphaNumeric(8), exitGame);
+    activeGameRooms.push(gameInstance);
+    activeGameRooms.forEach(x=>console.log(x.gameId));
+    return gameInstance;
   }
   function joinGame(client, gameId){
     const room = activeGameRooms.find(item => item.gameId === gameId);
@@ -41,4 +48,5 @@ module.exports = (expressServer)=>{
   function placeInLobby(client){
     lobbyObject.addClient(client);
   }
+  return placeInGameFunction;
 };
