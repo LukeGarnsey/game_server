@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { socket } from '../socket';
 import { useConnectionState } from "../socketHandlers/socketConnect.js";
 import { useParams } from 'react-router-dom';
-import GameCanvas from '../game/GameCanvas.jsx';
+import Waiting from '../game/Waiting.jsx';
+import FlashGame from '../game/FlashGame.jsx';
 
 
 export default function Game(){
@@ -15,6 +16,7 @@ export default function Game(){
   });
   const {paramGameId} = useParams();
   const [isRoom, setIsRoom] = useState(false);
+  const [gameState, setGameState] = useState('waiting');  
   
   useEffect(()=>{
     
@@ -41,6 +43,7 @@ export default function Game(){
         newHref = newHref.replace(paramGameId, '');
       window.location.href = newHref;
     }
+    
     if(!isConnected)
       socketConnect();
 
@@ -59,10 +62,8 @@ export default function Game(){
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  function ready(){
-    socket.emit('ready', {
-
-    });
+  function gameStart(){
+    setGameState('starting');
   }
   return (
     <>
@@ -71,11 +72,18 @@ export default function Game(){
           <div style={styles.container}>
             <h1>In Game</h1>
             
-            <button onClick={ready}>Ready</button>
+            {/* <button onClick={ready}>Ready</button> */}
 
             
           </div>
-          <GameCanvas />
+
+          {gameState === 'waiting' && (
+            <Waiting gameStartCallback={gameStart} />
+          )}
+          {gameState === 'starting' && (
+            <FlashGame />
+          )}
+          
         </>
       ) : (
         <h1>Connecting...</h1>

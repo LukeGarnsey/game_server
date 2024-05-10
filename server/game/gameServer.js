@@ -2,6 +2,7 @@ const {Server} = require("socket.io");
 const lobby = require("./lobby");
 const gameRoom = require('./gameRoom');
 const { generateRandomAlphaNumeric } = require("../util/random");
+const guessGame = require("./thinkFlash/guessGame");
 
 module.exports = (expressServer)=>{
   let activeGameRooms = [];
@@ -23,10 +24,11 @@ module.exports = (expressServer)=>{
     activeGameRooms.forEach(x=>console.log(x.gameId));
     return gameInstance;
   }
-  const placeInGameFunction = (clients) => {
+  const placeInGameFunction = (clients, deck) => {
     const gameInstance = gameRoom(io, clients, generateRandomAlphaNumeric(8), exitGame);
     activeGameRooms.push(gameInstance);
     activeGameRooms.forEach(x=>console.log(x.gameId));
+    gameInstance.gameToRun(guessGame(io, deck));
     return gameInstance;
   }
   function joinGame(client, gameId){
