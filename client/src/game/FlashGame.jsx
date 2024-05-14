@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { socket } from "../socket";
+import Questions from "./Question";
 
 export default function FlashGame(){
 
@@ -36,21 +37,22 @@ export default function FlashGame(){
   }
   return (
     <>
-    {myState === 'countdown' && (
+    {/* {myState === 'countdown' && (
       <h2>Game starting</h2>
     )}
-    {myState === 'game' && (
+    {myState === 'game' && ( */}
       <div>
         <h2>{5 - myTimer}</h2>
-        <h1>{myQuestion.question}</h1>
-      {myQuestion.answers.map((answer, index)=> (
-        <div key={index}>
-          <button onClick={()=>submitAnswer(myQuestion.indices[index])}>{answer}</button>
-        </div>
-      ))}
+        <Questions myQuestion={testQuestion} submitAnswer={submitAnswer} />
+        
     </div>
-    )}
+    {/* )} */}
       
     </>
   );
+}
+const testQuestion = {
+  question:"Which type of beatle will only come out when the moon is also awake?",
+  answers:["Graph Beatle", "Lady Bug Beattle", "Fountain Menace", "Black Swelt", "German Pincer"],
+  indices:[1,2,0,3,4]
 }

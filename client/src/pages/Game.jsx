@@ -69,20 +69,16 @@ export default function Game(){
     <>
     {isConnected && isRoom ? (
         <>
-          <div style={styles.mainContainer}>
-            
-            
-            {/* <button onClick={ready}>Ready</button> */}
-
-            
+          <div className='lg:flex lg:justify-between lg:gap-4'>
+            {gameState === 'waiting' && (
+              <Waiting gameStartCallback={gameStart} />
+            )}
+            {gameState === 'starting' && (
+              <FlashGame />
+            )}
           </div>
 
-          {gameState === 'waiting' && (
-            <Waiting gameStartCallback={gameStart} />
-          )}
-          {gameState === 'starting' && (
-            <FlashGame />
-          )}
+          
           
         </>
       ) : (
