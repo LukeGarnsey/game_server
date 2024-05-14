@@ -1,0 +1,12 @@
+.selected {
+  transform: translateY(-100px);
+  opacity: 0;
+}
+.dismis {
+  transform: translateY(100px);
+  opacity: 0;
+}
+
+.button-container {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}

@@ -8,14 +8,14 @@ function App() {
   return (
     <>
       <div className='group/spotlight relative'>
-        <div className='mx-auto min-h-screen max-w-screen-xl px-6 py-12 font-sans md:px-12 md:py-20 lg:px-24 lg:py-0'>
+        <div className='mx-auto min-h-screen max-w-screen-xl px-6 py-12 font-sans md:px-12 md:py-20 lg:px-24'>
           
             {/* <Outlet/> */}
-          <div className='lg:flex lg:justify-between lg:gap-4'>
+          {/* <div className='flex justify-between gap-4'> */}
            
               <FlashGame />
            
-          </div>
+          {/* </div> */}
         </div>
       </div>
     </>

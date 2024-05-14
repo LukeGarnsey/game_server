@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { socket } from "../socket";
 import Questions from "./Question";
 
@@ -8,7 +8,14 @@ export default function FlashGame(){
 
   const [myQuestion, setQuestion] = useState({question:'', indices:[], answers:[]});
 
-  const [myTimer, setTimer] = useState(0);
+  const [myTimer, setTimer] = useState(5);
+  const [timerBarWidthPercentage, setBar] = useState(1);
+  const timerRef = useRef(myTimer);
+  useEffect(()=>{
+    timerRef.current = myTimer;
+    const widthPercentage = Math.min(Math.max(myTimer/5, 0), 1) * 100;
+    setBar(widthPercentage);
+  }, [myTimer]);
 
   useEffect(() =>{
     function gameMessage({state, msg}){
@@ -21,7 +28,15 @@ export default function FlashGame(){
     function timer({timer}){
       setTimer(timer);
     }
-
+    const interval = setInterval(()=>{
+      let time = timerRef.current;
+      time -= .1;
+      if(time <= 0)
+        time = 5;
+      
+      setTimer(time);
+      timerRef.current = time;
+    }, 100);
     socket.on('gameMessage', gameMessage);
     socket.on('question', question);
     socket.on('timer', timer);
@@ -29,6 +44,7 @@ export default function FlashGame(){
       socket.off('gameMessage', gameMessage);
       socket.off('question', question);
       socket.off('timer', timer);
+      clearInterval(interval);
     };
   }, []);
   function submitAnswer(index){
@@ -41,10 +57,19 @@ export default function FlashGame(){
       <h2>Game starting</h2>
     )}
     {myState === 'game' && ( */}
-      <div>
-        <h2>{5 - myTimer}</h2>
+    <div>
+      <div className='flex justify-between items-center'>
+        <div className='w-1/2'>
+          <h2>{myTimer.toFixed(1)}</h2>
+        </div>
+        <div className='w-1/2 flex justify-center items-center'>
+          <hr className=""/>
+        </div>
+      </div>
         <Questions myQuestion={testQuestion} submitAnswer={submitAnswer} />
-        
+        <div className="w-full bg-slate-300 h-4 rounded">
+          <div className="bg-blue-500 h-4 rounded" style={{width: `${timerBarWidthPercentage}%`}}></div>
+        </div>
     </div>
     {/* )} */}
       
