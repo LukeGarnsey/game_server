@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './css/questionCSS.css'
 Questions.propTypes = {
   myQuestion: PropTypes.shape({
@@ -7,25 +7,38 @@ Questions.propTypes = {
     indices: PropTypes.arrayOf(PropTypes.number).isRequired,
     answers: PropTypes.arrayOf(PropTypes.string).isRequired
   }).isRequired,
-  submitAnswer: PropTypes.func.isRequired
+  submitAnswer: PropTypes.func.isRequired,
+  forceDismiss: PropTypes.bool.isRequired
 }
-export default function Questions({myQuestion, submitAnswer}){
+export default function Questions({myQuestion, submitAnswer, forceDismiss}){
   const [clickedIndex, setClickedIndex] = useState(null);
   const [animateSelection, setAnimateSelection] = useState(false);
   const handleClick = (index) =>{
-    console.log(index);
+    if(forceDismiss){
+      return;
+    }
     setClickedIndex(index);
     submitAnswer(myQuestion.indices[index]);
     setTimeout(() => {
       setAnimateSelection(true);
-    }, 200);
+    }, 250);
   };
+  useEffect(()=>{
+    if(forceDismiss){
+      setAnimateSelection(true);
+      setClickedIndex(-1);
+    }else{
+      console.log("UNDO");
+      setClickedIndex(null);
+      setAnimateSelection(false);
+    }
+  }, [forceDismiss]);
+  
   return ( 
     <>
       <div className='flex justify-between'>
-        <div className='sticky top-0 max-h-screen w-1/2 py-24'>
-          <h1>{myQuestion.question}</h1>
-          
+        <div className={`top-0 max-h-screen w-1/2 py-24 question-container ${(animateSelection?'question':'')}`}>
+          <h1 className={`text-4xl text-slate-200 `}>{myQuestion.question}</h1>
         </div>
         <div className='group/list pt-24 w-1/2 py-24 place-self-center grid grid-cols-1 gap-4'>
           {myQuestion.answers.map((answer, index)=> (

@@ -29,8 +29,8 @@ export default {
         purple:{
           '600': '#9333ea'
         },
-        white:{
-
+        red:{
+          '600': '#e11d48'
         }
       },
     },
