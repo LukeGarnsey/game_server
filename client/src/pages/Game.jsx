@@ -69,8 +69,8 @@ export default function Game(){
     <>
     {isConnected && isRoom ? (
         <>
-          <div style={styles.container}>
-            <h1>In Game</h1>
+          <div style={styles.mainContainer}>
+            
             
             {/* <button onClick={ready}>Ready</button> */}
 

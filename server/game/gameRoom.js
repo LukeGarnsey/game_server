@@ -19,27 +19,33 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
         return;
 
       client.join(gameId);
-      this.clients.addClient(client, 'loading');
-
+      this.clients.addClient(client, 'unready');
+      const emitLobbyState = () => {
+        this.clients.clients.forEach(c =>{
+          const state = c.state;
+          io.sockets.sockets.get(c.id).emit('roomState', {
+            clientObj:{
+              playersReady: game.clients.getClientsWithState('ready').length,
+              playerCount: game.clients.clients.length,
+              state,
+            },
+            deckTitle:game.activeGame.deck.title
+          });
+        });
+      };
+      emitLobbyState();
       
       //Setup client listeners
       client.on('ready', ({ready})=>{
         console.log('client ready');
         this.clients.setClientState(client, (ready)?'ready':'unready');
-        const playersReady = game.clients.getClientsWithState('ready').length;
-        this.clients.clients.forEach(client =>{
-          const state = client.state;
-          io.sockets.sockets.get(client.id).emit('ready', {
-            playersReady,
-            playerCount: game.clients.clients.length,
-            state
-          });
-        });
+        emitLobbyState();
       });
       client.on('disconnect', ()=>{
         console.log('game disconnect');
         this.removeSocketListeners(client);
         this.clients.removeClient(client);
+        emitLobbyState();
       });
       
     },

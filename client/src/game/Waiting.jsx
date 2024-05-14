@@ -4,25 +4,24 @@ import { socket } from "../socket";
 // import { UseUsername } from "../socketHandlers/username";
 
 export default function Waiting({gameStartCallback}){
-  const [readyState, setReadyState] = useState({playersReady:0,
-  playerCount:0, state:'unready'});
+  const [readyState, setReadyState] = useState({clientObj:{playersReady:0,
+  playerCount:0, state:'unready'}, deckTitle:''});
 
   useEffect(()=>{
-    function gameReady({playersReady, playerCount, state}){
+    function roomState({clientObj, deckTitle}){
       console.log('game ready stuff: ');
       setReadyState({
-        playersReady,
-        playerCount,
-        state
+        clientObj,
+        deckTitle
       });
     }
     function gameStart(){
       gameStartCallback();
     }
-    socket.on('ready', gameReady);
+    socket.on('roomState', roomState);
     socket.on('gameStart', gameStart);
     return () =>{
-      socket.off('ready', gameReady);
+      socket.off('roomState', roomState);
       socket.off('gameStart', gameStart);
     };
   }, []);
@@ -36,15 +35,16 @@ export default function Waiting({gameStartCallback}){
   }
   return (
     <>
-      {readyState.state === 'unready' && (
+    <h1>{readyState.deckTitle}</h1>
+      {readyState.clientObj.state === 'unready' && (
         <button onClick={ready}>Ready</button>
       )}
-      {readyState.state === 'ready' && (
+      {readyState.clientObj.state === 'ready' && (
         <button onClick={unReady}>UnReady</button>
       )}
       <div>
-        <h2>Players Ready: {readyState.playersReady}</h2>
-        <h2>Players: {readyState.playerCount}</h2>
+        <h2>Players Ready: {readyState.clientObj.playersReady}</h2>
+        <h2>Players: {readyState.clientObj.playerCount}</h2>
       </div>
     </>
   );

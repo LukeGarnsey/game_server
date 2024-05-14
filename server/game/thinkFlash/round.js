@@ -21,7 +21,12 @@ module.exports = (io, clients, {card, wrongGuesses}, roundTime, finished) =>{
         }
       });
       if(roundOver){
+        clients.forEach(c=>{
+          const client = io.sockets.sockets.get(c.id);
+          client.removeAllListeners('guess');
+        });
         finished();
+
       }
     },
     sendQuestion:function(client){
