@@ -28,7 +28,6 @@ export default function Questions({myQuestion, submitAnswer, forceDismiss}){
       setAnimateSelection(true);
       setClickedIndex(-1);
     }else{
-      console.log("UNDO");
       setClickedIndex(null);
       setAnimateSelection(false);
     }
@@ -38,7 +37,7 @@ export default function Questions({myQuestion, submitAnswer, forceDismiss}){
     <>
       <div className='flex justify-between'>
         <div className={`top-0 max-h-screen w-1/2 py-24 question-container ${(animateSelection?'question':'')}`}>
-          <h1 className={`text-4xl text-slate-200 `}>{myQuestion.question}</h1>
+          <h1 className={`text-4xl text-slate-200 w-full`}>{myQuestion.question}</h1>
         </div>
         <div className='group/list pt-24 w-1/2 py-24 place-self-center grid grid-cols-1 gap-4'>
           {myQuestion.answers.map((answer, index)=> (

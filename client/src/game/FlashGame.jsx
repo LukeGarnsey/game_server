@@ -15,8 +15,8 @@ export default function FlashGame(){
   const [myTimer, setTimer] = useState(5);
   const [timerBarWidthPercentage, setBar] = useState(1);
 
-  const [testQuestionIndex, testSetQuestionIndex] = useState(0);
-  const testQuestionIndexRef = useRef(testQuestionIndex);
+  // const [testQuestionIndex, testSetQuestionIndex] = useState(0);
+  // const testQuestionIndexRef = useRef(testQuestionIndex);
 
   const timerRef = useRef(myTimer);
   const answerRef = useRef(answerIndex);
@@ -45,7 +45,7 @@ export default function FlashGame(){
         timerRef.current = time;
   
         if(time <= 0 || answerRef.current !== null){
-          // console.log(" A : " + answerIndex);
+          console.log("ROUND is set to off");
           // time = 5;
           setEndQuestion(true);
           clearInterval(interval);
@@ -61,29 +61,30 @@ export default function FlashGame(){
             }
           }, 50);
 
-          console.log("Setting timeout");
-          setTimeout(()=>{
-            let testIndex = testQuestionIndexRef.current;
-            testIndex++;
-            console.log(testIndex);
-            if(testIndex >= testQuestions.length){
-              gameMessage({msg:'GAme Over', state:'GameOver'});
-              return;
-            }
-            testSetQuestionIndex(testIndex);
-            testQuestionIndexRef.current = testIndex;
-            questionCall(testQuestions[testIndex]);
-          }, 3000);
+          // console.log("Setting timeout");
+          // setTimeout(()=>{
+          //   let testIndex = testQuestionIndexRef.current;
+          //   testIndex++;
+          //   console.log(testIndex);
+          //   if(testIndex >= testQuestions.length){
+          //     gameMessage({msg:'GAme Over', state:'GameOver'});
+          //     return;
+          //   }
+          //   testSetQuestionIndex(testIndex);
+          //   testQuestionIndexRef.current = testIndex;
+          //   questionCall(testQuestions[testIndex]);
+          // }, 3000);
 
         }
       }, 50);
     }
     function timer({timer}){
-      setTimer(timer);
+      if(answerRef.current === null)
+        setTimer(timer);
     }
-    const temp = setTimeout(() => {
-      questionCall(testQuestions[testQuestionIndex]);
-    }, 1000);
+    // const temp = setTimeout(() => {
+    //   questionCall(testQuestions[testQuestionIndex]);
+    // }, 1000);
     socket.on('gameMessage', gameMessage);
     socket.on('question', questionCall);
     socket.on('timer', timer);
@@ -91,7 +92,7 @@ export default function FlashGame(){
       socket.off('gameMessage', gameMessage);
       socket.off('question', questionCall);
       socket.off('timer', timer);
-      clearTimeout(temp);
+      // clearTimeout(temp);
     };
   }, []);
   const submitAnswer = (index) => {

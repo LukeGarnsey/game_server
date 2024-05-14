@@ -28,9 +28,6 @@ export default function Game(){
       console.log("Game Over");
       noRoom();
     }
-    function gameMessage({msg}){
-      console.log(msg);
-    }
     function gameRoom({roomExists}){
       console.log('Is Room: ' + roomExists);
       setIsRoom(roomExists);
@@ -50,14 +47,12 @@ export default function Game(){
     socket.on('connect', handleConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('gameOver', gameOver);
-    socket.on('gameMessage', gameMessage);
     socket.on('gameRoom', gameRoom);
 
     return () => {
       socket.off('connect', handleConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('gameOver', gameOver);
-      socket.off('gameMessage', gameMessage);
       socket.off('gameRoom', gameRoom);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,7 +64,7 @@ export default function Game(){
     <>
     {isConnected && isRoom ? (
         <>
-          <div className='lg:flex lg:justify-between lg:gap-4'>
+          <div className='flex gap-4 justify-center'>
             {gameState === 'waiting' && (
               <Waiting gameStartCallback={gameStart} />
             )}

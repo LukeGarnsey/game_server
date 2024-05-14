@@ -23,17 +23,30 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
       const emitLobbyState = () => {
         this.clients.clients.forEach(c =>{
           const state = c.state;
+          const otherClients = this.clients.clients.filter(item => item !== c);
+          const otherPlayers = [...(this.clients.clients.filter(item => item !== c)
+          .map((item, index) => {
+            return{
+              state: item.state,
+              name: 'OtherName: '+index
+            }
+          }))];
+          // {
+          //   state: otherClients.map(item => item.state),
+          //   name: otherClients.map(item => "Other Name")
+          // }
           io.sockets.sockets.get(c.id).emit('roomState', {
             clientObj:{
-              playersReady: game.clients.getClientsWithState('ready').length,
-              playerCount: game.clients.clients.length,
+              name:'My Name',
               state,
+              otherPlayers
             },
-            deckTitle:game.activeGame.deck.title
+            deckTitle:game.activeGame.deck.title,
+            questionCount: game.activeGame.deck.cards.length
           });
         });
       };
-      emitLobbyState();
+      
       
       //Setup client listeners
       client.on('ready', ({ready})=>{
@@ -47,7 +60,9 @@ module.exports = (io, clientsInGame, gameId, exitGame)=>{
         this.clients.removeClient(client);
         emitLobbyState();
       });
-      
+      setTimeout(()=>{
+        emitLobbyState();
+      }, 100);
     },
     removeSocketListeners: function(client){
       client.removeAllListeners('idle');

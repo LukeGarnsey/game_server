@@ -9,13 +9,13 @@ module.exports = (io, clients, {card, wrongGuesses}, roundTime, finished) =>{
     correct:[],
     wrong:[],
     update:function(gameTime){
-      this.timer += gameTime;
-      const roundOver = (this.timer >= this.roundTime);
+      this.roundTime -= gameTime;
+      const roundOver = (this.roundTime <= 0);
       clients.forEach(c=>{
         const client = io.sockets.sockets.get(c.id);
         if(client === undefined)
           return;
-        client.emit('timer', {timer:this.timer});
+        client.emit('timer', {timer:this.roundTime});
         if(roundOver){
           client.emit('gameMessage', {state:'roundOver', msg:'ROUND OVER'});
         }
